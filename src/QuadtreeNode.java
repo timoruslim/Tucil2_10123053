@@ -8,8 +8,8 @@ public class QuadtreeNode {
 
    // Image fields
    public BufferedImage image;
-   public ColorErrorPair colorError = average(image);
-   public double error;
+   public Color color = average(image);
+   public double error = variance(image, color);
 
    // Tree fields
    public int depth; 
@@ -23,7 +23,7 @@ public class QuadtreeNode {
    }
 
    // Get average RGB color of image
-   public ColorErrorPair average(BufferedImage image) {
+   public Color average(BufferedImage image) {
       double sumR = 0, sumG = 0, sumB = 0;
       int w = image.getWidth();
       int h = image.getHeight();
@@ -33,24 +33,23 @@ public class QuadtreeNode {
          for (int x = 0; x < w; x++) {
             int rgb = image.getRGB(x, y); 
             Color color = new Color(rgb); 
-
+            
             sumR += color.getRed();
             sumG += color.getGreen();
             sumB += color.getBlue();
          }
       }
 
-      int R = (int) (sumR / N);
-      int G = (int) (sumG / N);
-      int B = (int) (sumB / N);
-      Color color = new Color(R, G, B);
-
-      return new ColorErrorPair(color, variance(image, w, h, N, color));
+      int R = (int) (sumR / N), G = (int) (sumG / N), B = (int) (sumB / N);
+      return new Color(R, G, B);
    }
 
    // Get color Variance of image
-   public double variance(BufferedImage image, int w, int h, int N, Color color) {
+   public double variance(BufferedImage image, Color color) {
       double varR = 0, varG = 0, varB = 0;
+      int w = image.getWidth();
+      int h = image.getHeight();
+      int N = w * h;
 
       for (int y = 0; y < h; y++) {
          for (int x = 0; x < w; x++) {
@@ -71,18 +70,86 @@ public class QuadtreeNode {
    }
 
    // Get color Mean Absolute Deviation (MAD) of image
-   public double mad(BufferedImage image) {
-      return 0; 
+   public double mad(BufferedImage image, Color color) {
+      double madR = 0, madG = 0, madB = 0;
+      int w = image.getWidth();
+      int h = image.getHeight();
+      int N = w * h;
+
+      for (int y = 0; y < h; y++) {
+         for (int x = 0; x < w; x++) {
+            int rgb = image.getRGB(x, y); 
+            Color pixelColor = new Color(rgb); 
+
+            madR += Math.abs(pixelColor.getRed() - color.getRed());
+            madG += Math.abs(pixelColor.getGreen() - color.getGreen());
+            madB += Math.abs(pixelColor.getBlue() - color.getBlue());
+         }
+      }
+
+      madR /= N;
+      madG /= N;
+      madB /= N;
+
+      return (madR + madG + madB) / 3; 
    }
 
    // Get color Max Pixel Difference (MPD) of image
    public double mpd(BufferedImage image) {
-      return 0; 
+      int maxR = 0, maxG = 0, maxB = 0;
+      int minR = 256, minG = 256, minB = 256;
+      int w = image.getWidth();
+      int h = image.getHeight();
+
+      for (int y = 0; y < h; y++) {
+         for (int x = 0; x < w; x++) {
+            int rgb = image.getRGB(x, y); 
+            Color color = new Color(rgb); 
+
+            maxR = (color.getRed() > maxR) ? color.getRed() : maxR;
+            maxG = (color.getGreen() > maxG) ? color.getRed() : maxG;
+            maxB = (color.getBlue() > maxB) ? color.getRed() : maxB;
+
+            minR = (color.getRed() < minR) ? color.getRed() : minR;
+            minG = (color.getGreen() < minG) ? color.getRed() : minG;
+            minB = (color.getBlue() < minB) ? color.getRed() : minB;
+         }
+      }
+
+      int dR = maxR - minR, dG = maxG - minG, dB = maxB - minB;
+      return (dR + dG + dB) / 3; 
    }
 
    // Get color Entropy of image
    public double entropy(BufferedImage image) {
-      return 0; 
+      int[] histR = new int[256], histG = new int[256], histB = new int[256];
+      int width = image.getWidth();
+      int height = image.getHeight();
+      int totalPixels = width * height;
+
+      for (int y = 0; y < height; y++) {
+         for (int x = 0; x < width; x++) {
+               int rgb = image.getRGB(x, y);
+               Color color = new Color(rgb);
+
+               histR[color.getRed()]++;
+               histG[color.getGreen()]++;
+               histB[color.getBlue()]++;
+         }
+      }
+
+      double hR = 0, hG = 0, hB = 0;
+      for (int i = 0; i < 256; i++) {
+         double pR = (double) histR[i] / totalPixels;
+         double pG = (double) histG[i] / totalPixels;
+         double pB = (double) histB[i] / totalPixels;
+
+         hR += pR * (Math.log(pR) / Math.log(2));
+         hG += pG * (Math.log(pG) / Math.log(2));
+         hB += pB * (Math.log(pB) / Math.log(2));
+      }
+
+      return -(hR + hG + hB) / 3; 
    }
 
    // Splits image into four sub-images
