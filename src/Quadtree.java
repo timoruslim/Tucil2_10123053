@@ -3,7 +3,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
@@ -13,16 +12,17 @@ public class Quadtree {
    // Tree Fields 
    public QuadtreeNode root;
    public int treeDepth = 0; 
-   public int mode;
+   public int nodeCount = 0;
 
    // Compression Constants
-   public int ERR_THRESHOLD;
+   public int MODE;
+   public double ERR_THRESHOLD;
    public int MIN_SIZE;
 
    // Constructor
-   public Quadtree(BufferedImage image, int ERR_THRESHOLD, int MIN_SIZE, int mode) {
-      this.root = new QuadtreeNode(image, 0, mode);
-      this.mode = mode;
+   public Quadtree(BufferedImage image, double ERR_THRESHOLD, int MIN_SIZE, int MODE) {
+      this.root = new QuadtreeNode(image, 0, MODE);
+      this.MODE = MODE;
       this.ERR_THRESHOLD = ERR_THRESHOLD;
       this.MIN_SIZE = MIN_SIZE;
 
@@ -31,6 +31,7 @@ public class Quadtree {
 
    // Build quadtree to compress image (divide)
    public void buildTree(QuadtreeNode node) {
+      nodeCount++;
       
       // Make into leaf node if sufficient
       int size = node.image.getWidth() * node.image.getHeight();
@@ -80,26 +81,25 @@ public class Quadtree {
    }
 
    // Instantly outputs file of fully compressed image
-   public void renderImage(String path, String fileType) throws IOException {
-      File output = new File(path);
+   public File renderImage(String path, String fileName, String fileType) throws IOException {
+
+      File output = new File(path + "\\" + fileName + "_compressed." + fileType);
       BufferedImage compressedImage = createImage(treeDepth);
       ImageIO.write(compressedImage, fileType, output);
+
+      return output;
    }
 
    // Outputs gif of full compression process
-   public void renderGif(String path) throws FileNotFoundException, IOException {
+   public void renderGif(String path, String fileName) throws FileNotFoundException, IOException {
       
-      ImageOutputStream output = new FileImageOutputStream(new File(path));
+      ImageOutputStream output = new FileImageOutputStream(new File(path + "\\" + fileName + "_compressed.gif"));
       GifSequenceWriter writer = new GifSequenceWriter(output, BufferedImage.TYPE_INT_RGB, 500, true);
 
-      for (int i = 0; i < treeDepth; i++) {
+      for (int i = 0; i <= treeDepth; i++) {
          BufferedImage image = createImage(i);
          writer.writeToSequence(image);
-         if (i == treeDepth - 1) {
-            for (int j = 0; j < 4; j++) {
-               writer.writeToSequence(image);
-            }
-         }
+         if (i == treeDepth) for (int j = 0; j < 4; j++) writer.writeToSequence(image);
       }
 
       writer.close();

@@ -39,9 +39,9 @@ public class ErrorCalculator {
             int rgb = image.getRGB(x, y); 
             Color pixelColor = new Color(rgb); 
 
-            varR += Math.pow(pixelColor.getRed() - color.getRed(), 2);
-            varG += Math.pow(pixelColor.getGreen() - color.getGreen(), 2);
-            varB += Math.pow(pixelColor.getBlue() - color.getBlue(), 2);
+            varR += Math.pow(pixelColor.getRed() - color.getRed(), 2.0);
+            varG += Math.pow(pixelColor.getGreen() - color.getGreen(), 2.0);
+            varB += Math.pow(pixelColor.getBlue() - color.getBlue(), 2.0);
          }
       }
 
@@ -49,7 +49,7 @@ public class ErrorCalculator {
       varG /= N;
       varB /= N;
 
-      return (varR + varG + varB) / 3; 
+      return (varR + varG + varB) / 3.0; 
    }
 
    // Get color Mean Absolute Deviation (MAD) of image
@@ -74,7 +74,7 @@ public class ErrorCalculator {
       madG /= N;
       madB /= N;
 
-      return (madR + madG + madB) / 3; 
+      return (madR + madG + madB) / 3.0; 
    }
 
    // Get color Max Pixel Difference (MPD) of image
@@ -100,7 +100,7 @@ public class ErrorCalculator {
       }
 
       int dR = maxR - minR, dG = maxG - minG, dB = maxB - minB;
-      return (dR + dG + dB) / 3; 
+      return (dR + dG + dB) / 3.0; 
    }
 
    // Get color Entropy of image
@@ -127,12 +127,12 @@ public class ErrorCalculator {
          histG[i] /= totalPixels;
          histB[i] /= totalPixels;
 
-         hR += histR[i] * (Math.log(histR[i]) / Math.log(2));
-         hG += histG[i] * (Math.log(histG[i]) / Math.log(2));
-         hB += histB[i] * (Math.log(histB[i]) / Math.log(2));
+         hR += histR[i] * (Math.log(histR[i]) / Math.log(2.0));
+         hG += histG[i] * (Math.log(histG[i]) / Math.log(2.0));
+         hB += histB[i] * (Math.log(histB[i]) / Math.log(2.0));
       }
 
-      return -(hR + hG + hB) / 3; 
+      return -(hR + hG + hB) / 3.0; 
    }
    
 }
