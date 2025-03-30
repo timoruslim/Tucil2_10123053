@@ -1,28 +1,34 @@
+import java.util.HashMap;
+import java.util.function.Supplier;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 public class ErrorCalculator {
-   public final Map<Integer, Function<BufferedImage, Double>> errorModes;
+
+   // Fields
+   public final HashMap<Integer, Supplier<Double>> errorModes;
+   public BufferedImage image;
    public Color color;
 
-   public ErrorCalculator(Color color) {
+   // Constructor 
+   public ErrorCalculator(BufferedImage image, Color color) {
       errorModes = new HashMap<>();
       errorModes.put(1, this::variance);
       errorModes.put(2, this::mad);
       errorModes.put(3, this::mpd);
       errorModes.put(4, this::entropy);
+
+      this.image = image;
       this.color = color;
    }
 
-   public double calculateError(BufferedImage image, int mode) {
-      return errorModes.getOrDefault(mode, img -> Double.NaN).apply(image);
+   // Calculate the error based on selected mode
+   public double calculateError(int mode) {
+      return errorModes.getOrDefault(mode, () -> -1.0).get();
    }
 
    // Get color Variance of image
-   public double variance(BufferedImage image) {
+   public double variance() {
       double varR = 0, varG = 0, varB = 0;
       int w = image.getWidth();
       int h = image.getHeight();
@@ -47,7 +53,7 @@ public class ErrorCalculator {
    }
 
    // Get color Mean Absolute Deviation (MAD) of image
-   public double mad(BufferedImage image) {
+   public double mad() {
       double madR = 0, madG = 0, madB = 0;
       int w = image.getWidth();
       int h = image.getHeight();
@@ -72,7 +78,7 @@ public class ErrorCalculator {
    }
 
    // Get color Max Pixel Difference (MPD) of image
-   public double mpd(BufferedImage image) {
+   public double mpd() {
       int maxR = 0, maxG = 0, maxB = 0;
       int minR = 256, minG = 256, minB = 256;
       int w = image.getWidth();
@@ -98,7 +104,7 @@ public class ErrorCalculator {
    }
 
    // Get color Entropy of image
-   public double entropy(BufferedImage image) {
+   public double entropy() {
       int[] histR = new int[256], histG = new int[256], histB = new int[256];
       int width = image.getWidth();
       int height = image.getHeight();
@@ -117,13 +123,13 @@ public class ErrorCalculator {
 
       double hR = 0, hG = 0, hB = 0;
       for (int i = 0; i < 256; i++) {
-         double pR = (double) histR[i] / totalPixels;
-         double pG = (double) histG[i] / totalPixels;
-         double pB = (double) histB[i] / totalPixels;
+         histR[i] /= totalPixels;
+         histG[i] /= totalPixels;
+         histB[i] /= totalPixels;
 
-         hR += pR * (Math.log(pR) / Math.log(2));
-         hG += pG * (Math.log(pG) / Math.log(2));
-         hB += pB * (Math.log(pB) / Math.log(2));
+         hR += histR[i] * (Math.log(histR[i]) / Math.log(2));
+         hG += histG[i] * (Math.log(histG[i]) / Math.log(2));
+         hB += histB[i] * (Math.log(histB[i]) / Math.log(2));
       }
 
       return -(hR + hG + hB) / 3; 

@@ -1,16 +1,16 @@
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 
 public class QuadtreeNode {
 
    // Image fields
    public BufferedImage image;
    public int size;
-   public Color color;
-   public double error;
    public int mode;
+   public Color color; // average color
+   public double error;
 
    // Node fields
    public int depth; 
@@ -20,13 +20,12 @@ public class QuadtreeNode {
    // Constructor 
    public QuadtreeNode(BufferedImage image, int depth, int mode) {
       this.image = image;
-      this.depth = depth;
       this.size = image.getWidth() * image.getHeight();
-
       this.mode = mode;
       this.color = average();
-      ErrorCalculator calc = new ErrorCalculator(color); 
-      this.error = calc.calculateError(image, mode);
+      ErrorCalculator calc = new ErrorCalculator(image, color); 
+      this.error = calc.calculateError(mode);
+      this.depth = depth;
    }
 
    // Get average RGB color of image

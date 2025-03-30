@@ -1,10 +1,11 @@
+import java.util.ArrayList;
 import java.awt.image.BufferedImage;
 
 public class Quadtree {
    
    // Tree Fields 
    public QuadtreeNode root;
-   public int depth = 0; 
+   public int treeDepth = 0; 
    public int mode;
 
    // Compression Constants
@@ -17,26 +18,35 @@ public class Quadtree {
       this.mode = mode;
       this.ERR_THRESHOLD = ERR_THRESHOLD;
       this.MIN_SIZE = MIN_SIZE;
+
+      buildTree(root);
    }
 
    // Build quadtree to compress image (divide)
-   public void buildTree(QuadtreeNode node, int maxDepth) {
+   public void buildTree(QuadtreeNode node) {
       
+      // Reached leaf node
       if (node.error <= this.ERR_THRESHOLD || node.size <= this.MIN_SIZE) {
-         if (node.depth > this.depth) this.depth = node.depth;
+         if (node.depth > this.treeDepth) this.treeDepth = node.depth; 
          node.leaf = true;
          return;
       }
 
+      // Recursion
       node.divide();
       for (QuadtreeNode child : node.children) {
-         buildTree(child, maxDepth);
+         buildTree(child);
       }
    }
 
-   // Get all leaf nodes or smallest blocks after compression at a given depth
-   public void getLeaves(int depth) {
-      
+   // Get all leaf nodes (smallest blocks after compression) at a given depth
+   public ArrayList<QuadtreeNode> getLeaves(int depth) {
+      ArrayList<QuadtreeNode> leaves = new ArrayList<>();
+
+      // stuff
+
+      return leaves;
+
    }
 
 }
