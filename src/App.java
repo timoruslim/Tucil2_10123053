@@ -11,9 +11,10 @@ public class App {
 
       File imageFile = new File("D:\\ITB\\Semester 4\\Strategi Algoritma\\Tugas Kecil 2\\test\\Adiel.png"); 
       BufferedImage image = ImageIO.read(imageFile);
-      Quadtree tree = new Quadtree(image, 0, 0, mode);
+      Quadtree tree = new Quadtree(image, 5, 2, mode);
 
-      System.out.println(tree.root.error);
-
+      BufferedImage compressedImage = tree.createImage(tree.treeDepth);
+      File output = new File("D:\\ITB\\Semester 4\\Strategi Algoritma\\Tugas Kecil 2\\test\\AdielCompressed.png");
+      ImageIO.write(compressedImage, "png", output);
    }
 }
