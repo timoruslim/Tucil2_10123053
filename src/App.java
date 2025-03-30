@@ -9,12 +9,12 @@ public class App {
 
       int mode = 2;
 
-      File imageFile = new File("D:\\ITB\\Semester 4\\Strategi Algoritma\\Tugas Kecil 2\\test\\Adiel.png"); 
+      File imageFile = new File("../test/flowers.jpg"); 
       BufferedImage image = ImageIO.read(imageFile);
       Quadtree tree = new Quadtree(image, 5, 2, mode);
 
-      BufferedImage compressedImage = tree.createImage(tree.treeDepth);
-      File output = new File("D:\\ITB\\Semester 4\\Strategi Algoritma\\Tugas Kecil 2\\test\\AdielCompressed.png");
-      ImageIO.write(compressedImage, "png", output);
+      tree.renderImage("../test/Compressed_flowers.jpg", "jpg");
+      tree.renderGif("../test/Compressed_flowers.gif");
+
    }
 }

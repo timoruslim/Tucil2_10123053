@@ -72,10 +72,10 @@ public class QuadtreeNode {
       int mw = w / 2;
       int mh = h / 2;
 
-      QuadtreeNode tl = new QuadtreeNode(image.getSubimage(0, 0, mw, mh), depth++, mode); 
-      QuadtreeNode tr = new QuadtreeNode(image.getSubimage(mw, 0, w-mw, mh), depth++, mode); 
-      QuadtreeNode bl = new QuadtreeNode(image.getSubimage(0, mh, mw, h-mh), depth++, mode); 
-      QuadtreeNode br = new QuadtreeNode(image.getSubimage(mw, mh, w-mw, h-mh), depth++, mode); 
+      QuadtreeNode tl = new QuadtreeNode(image.getSubimage(0, 0, mw, mh), depth + 1, mode); 
+      QuadtreeNode tr = new QuadtreeNode(image.getSubimage(mw, 0, w-mw, mh), depth + 1, mode); 
+      QuadtreeNode bl = new QuadtreeNode(image.getSubimage(0, mh, mw, h-mh), depth + 1, mode); 
+      QuadtreeNode br = new QuadtreeNode(image.getSubimage(mw, mh, w-mw, h-mh), depth + 1, mode); 
       this.children = new ArrayList<>(Arrays.asList(tl, tr, bl, br)); 
 
    }

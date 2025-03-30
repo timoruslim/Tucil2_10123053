@@ -22,7 +22,7 @@ public class ErrorCalculator {
       this.color = color;
    }
 
-   // Calculate the error based on selected mode
+   // Calculate the error based on the mode
    public double calculateError(int mode) {
       return errorModes.getOrDefault(mode, () -> -1.0).get();
    }
