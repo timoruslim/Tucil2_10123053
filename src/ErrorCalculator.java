@@ -34,14 +34,15 @@ public class ErrorCalculator {
       int h = image.getHeight();
       int N = w * h;
 
+      int meanR = color.getRed(), meanG = color.getGreen(), meanB = color.getBlue();
       for (int y = 0; y < h; y++) {
          for (int x = 0; x < w; x++) {
             int rgb = image.getRGB(x, y); 
             Color pixelColor = new Color(rgb); 
 
-            varR += Math.pow(pixelColor.getRed() - color.getRed(), 2.0);
-            varG += Math.pow(pixelColor.getGreen() - color.getGreen(), 2.0);
-            varB += Math.pow(pixelColor.getBlue() - color.getBlue(), 2.0);
+            varR += Math.pow(pixelColor.getRed() - meanR, 2.0);
+            varG += Math.pow(pixelColor.getGreen() - meanG, 2.0);
+            varB += Math.pow(pixelColor.getBlue() - meanB, 2.0);
          }
       }
 
@@ -59,14 +60,15 @@ public class ErrorCalculator {
       int h = image.getHeight();
       int N = w * h;
 
+      int meanR = color.getRed(), meanG = color.getGreen(), meanB = color.getBlue();
       for (int y = 0; y < h; y++) {
          for (int x = 0; x < w; x++) {
             int rgb = image.getRGB(x, y); 
             Color pixelColor = new Color(rgb); 
 
-            madR += Math.abs(pixelColor.getRed() - color.getRed());
-            madG += Math.abs(pixelColor.getGreen() - color.getGreen());
-            madB += Math.abs(pixelColor.getBlue() - color.getBlue());
+            madR += Math.abs(pixelColor.getRed() - meanR);
+            madG += Math.abs(pixelColor.getGreen() - meanG);
+            madB += Math.abs(pixelColor.getBlue() - meanB);
          }
       }
 
@@ -90,12 +92,12 @@ public class ErrorCalculator {
             Color color = new Color(rgb); 
 
             maxR = (color.getRed() > maxR) ? color.getRed() : maxR;
-            maxG = (color.getGreen() > maxG) ? color.getRed() : maxG;
-            maxB = (color.getBlue() > maxB) ? color.getRed() : maxB;
+            maxG = (color.getGreen() > maxG) ? color.getGreen() : maxG;
+            maxB = (color.getBlue() > maxB) ? color.getBlue() : maxB;
 
             minR = (color.getRed() < minR) ? color.getRed() : minR;
-            minG = (color.getGreen() < minG) ? color.getRed() : minG;
-            minB = (color.getBlue() < minB) ? color.getRed() : minB;
+            minG = (color.getGreen() < minG) ? color.getGreen() : minG;
+            minB = (color.getBlue() < minB) ? color.getBlue() : minB;
          }
       }
 
@@ -105,10 +107,10 @@ public class ErrorCalculator {
 
    // Get color Entropy of image
    public double entropy() {
-      int[] histR = new int[256], histG = new int[256], histB = new int[256];
+      double[] histR = new double[256], histG = new double[256], histB = new double[256];
       int width = image.getWidth();
       int height = image.getHeight();
-      int totalPixels = width * height;
+      int N = width * height;
 
       for (int y = 0; y < height; y++) {
          for (int x = 0; x < width; x++) {
@@ -123,16 +125,45 @@ public class ErrorCalculator {
 
       double hR = 0, hG = 0, hB = 0;
       for (int i = 0; i < 256; i++) {
-         histR[i] /= totalPixels;
-         histG[i] /= totalPixels;
-         histB[i] /= totalPixels;
+         histR[i] /= N;
+         histG[i] /= N;
+         histB[i] /= N;
 
-         hR += histR[i] * (Math.log(histR[i]) / Math.log(2.0));
-         hG += histG[i] * (Math.log(histG[i]) / Math.log(2.0));
-         hB += histB[i] * (Math.log(histB[i]) / Math.log(2.0));
+         hR += (histR[i] > 0) ? histR[i] * (Math.log(histR[i]) / Math.log(2.0)) : 0;
+         hG += (histG[i] > 0) ?  histG[i] * (Math.log(histG[i]) / Math.log(2.0)) : 0;
+         hB += (histB[i] > 0) ?  histB[i] * (Math.log(histB[i]) / Math.log(2.0)) : 0;
       }
 
       return -(hR + hG + hB) / 3.0; 
    }
    
+   // Get color SSIM of image
+   public double ssim() {
+      double varR = 0, varG = 0, varB = 0;
+      int w = image.getWidth();
+      int h = image.getHeight();
+      double N = w * h;
+
+      int meanR = color.getRed(), meanG = color.getGreen(), meanB = color.getBlue();
+      for (int y = 0; y < h; y++) {
+         for (int x = 0; x < w; x++) {
+            int rgb = image.getRGB(x, y); 
+            Color pixelColor = new Color(rgb); 
+
+            varR += Math.pow(pixelColor.getRed() - meanR, 2.0);
+            varG += Math.pow(pixelColor.getGreen() - meanG, 2.0);
+            varB += Math.pow(pixelColor.getBlue() - meanB, 2.0);
+         }
+      }
+
+      varR /= N - 1.0;
+      varG /= N - 1.0;
+      varB /= N - 1.0;
+
+      double C2 = Math.pow(0.03 * 255, 2);
+      double siR = 1 / (varR / C2 + 1), siG = 1 / (varG / C2 + 1), siB = 1 / (varB / C2 + 1);
+
+      return 0.299 * siR + 0.587 * siG + 0.144 * siB; 
+   }
+
 }

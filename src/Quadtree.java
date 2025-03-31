@@ -91,9 +91,10 @@ public class Quadtree {
    }
 
    // Outputs gif of full compression process
-   public void renderGif(String path, String fileName) throws FileNotFoundException, IOException {
+   public File renderGif(String path, String fileName) throws FileNotFoundException, IOException {
       
-      ImageOutputStream output = new FileImageOutputStream(new File(path + "\\" + fileName + "_compressed.gif"));
+      File file = new File(path + "\\" + fileName + "_compressed.gif");
+      ImageOutputStream output = new FileImageOutputStream(file);
       GifSequenceWriter writer = new GifSequenceWriter(output, BufferedImage.TYPE_INT_RGB, 500, true);
 
       for (int i = 0; i <= treeDepth; i++) {
@@ -104,6 +105,8 @@ public class Quadtree {
 
       writer.close();
       output.close();
+
+      return file;
 
    }
 

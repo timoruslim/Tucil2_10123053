@@ -26,7 +26,7 @@ public class App {
    public static void main(String[] args) throws IOException {
 
       System.out.println(
-         "========================================================================================================================================\n" +
+         "\n========================================================================================================================================\n" +
          " ________                    .___ __                          _________                                                                 \n" +
          " \\_____  \\  __ _______     __| _//  |________   ____   ____   \\_   ___ \\  ____   _____ _____________   ____   ______ _________________ \n" +
          "  /  / \\  \\|  |  \\__  \\   / __ |\\   __\\_  __ \\_/ __ \\_/ __ \\  /    \\  \\/ /  _ \\ /     \\\\____ \\_  __ \\_/ __ \\ /  ___//  ___/  _ \\_  __ \\\n" +
@@ -55,7 +55,7 @@ public class App {
          // Input for image file path 
          while (imageFile == null) {
 
-               System.out.print("\nApa gambar yang ingin dikompres? [ketik alamat] \u2192 ");
+               System.out.print("\nApa gambar yang ingin dikompresi? [ketik alamat] \u2192 ");
                String path = scanner.nextLine( );
                File option1 = new File(path); // absolute path
                File option2 = new File("../test/" + path); // for ease of testing
@@ -186,10 +186,11 @@ public class App {
          Quadtree tree = new Quadtree(image, ERR_THRESHOLD, MIN_SIZE, ERR_MODE);
 
          File compressedFile = tree.renderImage(imagePath, getInfo(imageFile, "name"), getInfo(imageFile, "extension"));
+         File gifFile = null;
          
          if (gifPath != null) {
             System.out.println("GIF sedang dibuat...");
-            tree.renderGif(gifPath, getInfo(imageFile, "name"));
+            gifFile = tree.renderGif(gifPath, getInfo(imageFile, "name"));
          }
 
          long end = System.nanoTime();
@@ -208,6 +209,9 @@ public class App {
          System.out.println("Persentasi kompresi      : " + df.format(compressionPercent) + "% ");
          System.out.println("Kedalaman pohon          : " + tree.treeDepth + " ");
          System.out.println("Banyak simpul pada pohon : " + tree.nodeCount + " ");
+
+         System.out.println("\nGambar hasil kompresi dapat ditemukan di \"" + compressedFile.getAbsolutePath() + "\". ");
+         if (gifFile != null) System.out.println("GIF proses kompresi dapat ditemukan di \"" + gifFile.getAbsolutePath() + "\". ");
 
          // Reset settings
          imageFile = null;
