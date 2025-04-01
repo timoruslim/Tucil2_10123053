@@ -14,14 +14,16 @@ public class Quadtree {
    public int treeDepth = 0; 
    public int nodeCount = 0;
 
-   // Compression Constants
+   // Compression Fields
+   public BufferedImage image;
    public int ERR_MODE;
    public double ERR_THRESHOLD;
    public int MIN_SIZE;
 
    // Constructor
    public Quadtree(BufferedImage image, double ERR_THRESHOLD, int MIN_SIZE, int ERR_MODE) {
-      this.root = new QuadtreeNode(image, 0, ERR_MODE);
+      this.root = new QuadtreeNode(image, new int[]{0, 0, image.getWidth(), image.getHeight()}, 0, ERR_MODE);
+      this.image = image;
       this.ERR_MODE = ERR_MODE;
       this.ERR_THRESHOLD = ERR_THRESHOLD;
       this.MIN_SIZE = MIN_SIZE;
@@ -34,7 +36,7 @@ public class Quadtree {
       nodeCount++;
       
       // Make into leaf node if sufficient
-      int size = node.image.getWidth() * node.image.getHeight();
+      int size = node.patch[2] * node.patch[3];
       if (node.error <= ERR_THRESHOLD || size <= MIN_SIZE || size/4 < MIN_SIZE) {
          if (node.depth > treeDepth) treeDepth = node.depth; 
          // System.out.println("Leaf: " + node.error);
@@ -43,7 +45,7 @@ public class Quadtree {
       }
 
       // Recursion 
-      node.divide();
+      node.divide(image);
       // System.out.println("Branch: " + node.error);
       for (QuadtreeNode child : node.children) {
          buildTree(child);
@@ -60,10 +62,10 @@ public class Quadtree {
    private BufferedImage createImageRecursion(QuadtreeNode node, int depth) {
 
       if (node.leaf || node.depth == depth || node.children == null) { 
-         return node.cImage; 
+         return node.compress(); 
       } 
 
-      int w = node.image.getWidth(), h = node.image.getHeight(); 
+      int w = node.patch[2], h = node.patch[3]; 
       BufferedImage rImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB); 
       Graphics2D g = rImage.createGraphics(); 
 

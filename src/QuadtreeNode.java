@@ -7,11 +7,10 @@ import java.awt.image.BufferedImage;
 public class QuadtreeNode {
 
    // Image fields
-   public BufferedImage image; // original image
+   public int[] patch = new int[4]; // (x, y, w, h)
    public int mode;
    public Color color; // average color
    public double error;
-   public BufferedImage cImage; // monotone image 
 
    // Node fields
    public int depth; 
@@ -19,31 +18,31 @@ public class QuadtreeNode {
    public boolean leaf = false;
 
    // Constructor 
-   public QuadtreeNode(BufferedImage image, int depth, int mode) {
-      this.image = image;
-      this.mode = mode;
-      this.color = average();
-      this.error = ErrorCalculator.calculateError(mode, image, color);
-      this.cImage = compress();
+   public QuadtreeNode(BufferedImage image, int[] patch, int depth, int mode) {
       this.depth = depth;
+      this.patch = patch;
+      this.mode = mode;
+      this.color = average(image);
+      this.error = ErrorCalculator.calculateError(mode, image, this);
    }
 
    // Get average RGB color of image
-   public Color average() {
+   public Color average(BufferedImage image) {
       double sumR = 0, sumG = 0, sumB = 0;
-      int w = image.getWidth();
-      int h = image.getHeight();
+      int x = patch[0];
+      int y = patch[1];
+      int w = patch[2];
+      int h = patch[3];
       int N = w * h;
 
-      for (int y = 0; y < h; y++) {
-         for (int x = 0; x < w; x++) {
-            int rgb = image.getRGB(x, y); 
-            Color color = new Color(rgb); 
-            
-            sumR += color.getRed();
-            sumG += color.getGreen();
-            sumB += color.getBlue();
-         }
+      int[] pixels = new int[N];
+      image.getRGB(x, y, w, h, pixels, 0, w);
+
+      for (int i = 0; i < N; i++) {
+         Color color = new Color(pixels[i]); 
+         sumR += color.getRed();
+         sumG += color.getGreen();
+         sumB += color.getBlue();
       }
 
       int R = (int) (sumR / N), G = (int) (sumG / N), B = (int) (sumB / N);
@@ -52,29 +51,33 @@ public class QuadtreeNode {
 
    // Creates monotone image of average color 
    public BufferedImage compress() {
-      int width = image.getWidth(), height = image.getHeight();
-      BufferedImage cImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+      int w = patch[2];
+      int h = patch[3];
+
+      BufferedImage cImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
       Graphics2D g = cImage.createGraphics();
 
       g.setColor(color);
-      g.fillRect(0, 0, width, height);
+      g.fillRect(0, 0, w, h);
       g.dispose();
 
       return cImage;
    }
 
    // Splits image into four sub-images
-   public void divide() {
+   public void divide(BufferedImage image) {
 
-      int w = image.getWidth();
-      int h = image.getHeight();
+      int x = patch[0];
+      int y = patch[1];
+      int w = patch[2];
+      int h = patch[3];
       int mw = w / 2;
       int mh = h / 2;
 
-      QuadtreeNode tl = new QuadtreeNode(image.getSubimage(0, 0, mw, mh), depth + 1, mode); 
-      QuadtreeNode tr = new QuadtreeNode(image.getSubimage(mw, 0, w-mw, mh), depth + 1, mode); 
-      QuadtreeNode bl = new QuadtreeNode(image.getSubimage(0, mh, mw, h-mh), depth + 1, mode); 
-      QuadtreeNode br = new QuadtreeNode(image.getSubimage(mw, mh, w-mw, h-mh), depth + 1, mode); 
+      QuadtreeNode tl = new QuadtreeNode(image, new int[]{x, y, mw, mh}, depth + 1, mode); 
+      QuadtreeNode tr = new QuadtreeNode(image, new int[]{x+mw, y, w-mw, mh}, depth + 1, mode); 
+      QuadtreeNode bl = new QuadtreeNode(image, new int[]{x, y+mh, mw, h-mh}, depth + 1, mode); 
+      QuadtreeNode br = new QuadtreeNode(image, new int[]{x+mw, y+mh, w-mw, h-mh}, depth + 1, mode); 
       this.children = new ArrayList<>(Arrays.asList(tl, tr, bl, br)); 
 
    }

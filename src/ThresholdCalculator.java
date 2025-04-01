@@ -42,16 +42,17 @@ public class ThresholdCalculator {
          // Create tree using given threshold 
          BufferedImage image = ImageIO.read(imageFile);
          Quadtree tree = new Quadtree(image, threshold, MIN_SIZE, ERR_MODE);
-         System.out.println("Created tree");
+         // System.out.println("Created tree");
          
          File compressedFile = tree.renderImage(tempDir.getAbsolutePath(), "temp_" + iteration, fileExtension);
-         System.out.println("Createed temporary image");
+         // System.out.println("Created temporary image");
 
          // Check compression
          double compressedSize = compressedFile.length();
          double compressionPercent = 1.0 - (compressedSize / originalSize);
 
-         if (Math.abs(compressionPercent - COMP_TARGET) < 0.01) { 
+         // System.out.println("Iteration " + (iteration + 1) + ": using threshold " + threshold + " to get " + (compressionPercent * 100) + "% compression");
+         if (Math.abs(compressionPercent - COMP_TARGET) < 0.005) { 
 
             deleteAll(tempDir);
             return threshold; // found correct threshold
@@ -73,7 +74,6 @@ public class ThresholdCalculator {
          System.gc();
          
          iteration++;
-         System.out.println("Iteration " + iteration + ": using threshold " + threshold + " to get " + (compressionPercent * 100) + "% compression");
 
       }
       

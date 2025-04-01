@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 public class ErrorCalculator {
 
    // Hashmap for error calculation mode
-   public static final HashMap<Integer, BiFunction<BufferedImage, Color, Double>> errorModes = new HashMap<>();
+   public static final HashMap<Integer, BiFunction<BufferedImage, QuadtreeNode, Double>> errorModes = new HashMap<>();
    static {
       errorModes.put(1, ErrorCalculator::variance);
       errorModes.put(2, ErrorCalculator::mad);
@@ -16,27 +16,29 @@ public class ErrorCalculator {
    }
 
    // Calculate the error based on the mode
-   public static double calculateError(int mode, BufferedImage image, Color color) {
-      return errorModes.get(mode).apply(image, color);
+   public static double calculateError(int mode, BufferedImage image, QuadtreeNode node) {
+      return errorModes.get(mode).apply(image, node);
    }
 
    // Get color Variance of image
-   public static double variance(BufferedImage image, Color color) {
+   public static double variance(BufferedImage image, QuadtreeNode node) {
       double varR = 0, varG = 0, varB = 0;
-      int w = image.getWidth();
-      int h = image.getHeight();
+      int x = node.patch[0];
+      int y = node.patch[1];
+      int w = node.patch[2];
+      int h = node.patch[3];
       int N = w * h;
 
-      int meanR = color.getRed(), meanG = color.getGreen(), meanB = color.getBlue();
-      for (int y = 0; y < h; y++) {
-         for (int x = 0; x < w; x++) {
-            int rgb = image.getRGB(x, y); 
-            Color pixelColor = new Color(rgb); 
+      int[] pixels = new int[N];
+      image.getRGB(x, y, w, h, pixels, 0, w);
 
-            varR += Math.pow(pixelColor.getRed() - meanR, 2.0);
-            varG += Math.pow(pixelColor.getGreen() - meanG, 2.0);
-            varB += Math.pow(pixelColor.getBlue() - meanB, 2.0);
-         }
+      int meanR = node.color.getRed(), meanG = node.color.getGreen(), meanB = node.color.getBlue();
+      for (int i = 0; i < N; i++) {
+         Color pixelColor = new Color(pixels[i]);
+
+         varR += Math.pow(pixelColor.getRed() - meanR, 2.0);
+         varG += Math.pow(pixelColor.getGreen() - meanG, 2.0);
+         varB += Math.pow(pixelColor.getBlue() - meanB, 2.0);
       }
 
       varR /= N;
@@ -47,22 +49,24 @@ public class ErrorCalculator {
    }
 
    // Get color Mean Absolute Deviation (MAD) of image
-   public static double mad(BufferedImage image, Color color) {
+   public static double mad(BufferedImage image, QuadtreeNode node) {
       double madR = 0, madG = 0, madB = 0;
-      int w = image.getWidth();
-      int h = image.getHeight();
+      int x = node.patch[0];
+      int y = node.patch[1];
+      int w = node.patch[2];
+      int h = node.patch[3];
       int N = w * h;
 
-      int meanR = color.getRed(), meanG = color.getGreen(), meanB = color.getBlue();
-      for (int y = 0; y < h; y++) {
-         for (int x = 0; x < w; x++) {
-            int rgb = image.getRGB(x, y); 
-            Color pixelColor = new Color(rgb); 
+      int[] pixels = new int[N];
+      image.getRGB(x, y, w, h, pixels, 0, w);
 
-            madR += Math.abs(pixelColor.getRed() - meanR);
-            madG += Math.abs(pixelColor.getGreen() - meanG);
-            madB += Math.abs(pixelColor.getBlue() - meanB);
-         }
+      int meanR = node.color.getRed(), meanG = node.color.getGreen(), meanB = node.color.getBlue();
+      for (int i = 0; i < N; i++) {
+         Color pixelColor = new Color(pixels[i]); 
+
+         madR += Math.abs(pixelColor.getRed() - meanR);
+         madG += Math.abs(pixelColor.getGreen() - meanG);
+         madB += Math.abs(pixelColor.getBlue() - meanB);
       }
 
       madR /= N;
@@ -73,25 +77,28 @@ public class ErrorCalculator {
    }
 
    // Get color Max Pixel Difference (MPD) of image
-   public static double mpd(BufferedImage image, Color color) {
+   public static double mpd(BufferedImage image, QuadtreeNode node) {
       int maxR = 0, maxG = 0, maxB = 0;
       int minR = 256, minG = 256, minB = 256;
-      int w = image.getWidth();
-      int h = image.getHeight();
+      int x = node.patch[0];
+      int y = node.patch[1];
+      int w = node.patch[2];
+      int h = node.patch[3];
+      int N = w * h;
 
-      for (int y = 0; y < h; y++) {
-         for (int x = 0; x < w; x++) {
-            int rgb = image.getRGB(x, y); 
-            Color pixelColor = new Color(rgb); 
+      int[] pixels = new int[N];
+      image.getRGB(x, y, w, h, pixels, 0, w);
 
-            maxR = (pixelColor.getRed() > maxR) ? pixelColor.getRed() : maxR;
-            maxG = (pixelColor.getGreen() > maxG) ? pixelColor.getGreen() : maxG;
-            maxB = (pixelColor.getBlue() > maxB) ? pixelColor.getBlue() : maxB;
+      for (int i = 0; i < N; i++) {
+         Color pixelColor = new Color(pixels[i]); 
 
-            minR = (pixelColor.getRed() < minR) ? pixelColor.getRed() : minR;
-            minG = (pixelColor.getGreen() < minG) ? pixelColor.getGreen() : minG;
-            minB = (pixelColor.getBlue() < minB) ? pixelColor.getBlue() : minB;
-         }
+         maxR = (pixelColor.getRed() > maxR) ? pixelColor.getRed() : maxR;
+         maxG = (pixelColor.getGreen() > maxG) ? pixelColor.getGreen() : maxG;
+         maxB = (pixelColor.getBlue() > maxB) ? pixelColor.getBlue() : maxB;
+
+         minR = (pixelColor.getRed() < minR) ? pixelColor.getRed() : minR;
+         minG = (pixelColor.getGreen() < minG) ? pixelColor.getGreen() : minG;
+         minB = (pixelColor.getBlue() < minB) ? pixelColor.getBlue() : minB;
       }
 
       int dR = maxR - minR, dG = maxG - minG, dB = maxB - minB;
@@ -99,21 +106,23 @@ public class ErrorCalculator {
    }
 
    // Get color Entropy of image
-   public static double entropy(BufferedImage image, Color color) {
+   public static double entropy(BufferedImage image, QuadtreeNode node) {
       double[] histR = new double[256], histG = new double[256], histB = new double[256];
-      int width = image.getWidth();
-      int height = image.getHeight();
-      int N = width * height;
+      int x = node.patch[0];
+      int y = node.patch[1];
+      int w = node.patch[2];
+      int h = node.patch[3];
+      int N = w * h;
 
-      for (int y = 0; y < height; y++) {
-         for (int x = 0; x < width; x++) {
-               int rgb = image.getRGB(x, y);
-               Color pixelColor = new Color(rgb);
+      int[] pixels = new int[N];
+      image.getRGB(x, y, w, h, pixels, 0, w);
 
-               histR[pixelColor.getRed()]++;
-               histG[pixelColor.getGreen()]++;
-               histB[pixelColor.getBlue()]++;
-         }
+      for (int i = 0; i < N; i++) {
+         Color pixelColor = new Color(pixels[i]);
+
+         histR[pixelColor.getRed()]++;
+         histG[pixelColor.getGreen()]++;
+         histB[pixelColor.getBlue()]++;
       }
 
       double hR = 0, hG = 0, hB = 0;
@@ -131,29 +140,31 @@ public class ErrorCalculator {
    }
    
    // Get color SSIM of image
-   public static double ssim(BufferedImage image, Color color) {
+   public static double ssim(BufferedImage image, QuadtreeNode node) {
       double varR = 0, varG = 0, varB = 0;
-      int w = image.getWidth();
-      int h = image.getHeight();
-      double N = w * h;
+      int x = node.patch[0];
+      int y = node.patch[1];
+      int w = node.patch[2];
+      int h = node.patch[3];
+      int N = w * h;
 
-      int meanR = color.getRed(), meanG = color.getGreen(), meanB = color.getBlue();
-      for (int y = 0; y < h; y++) {
-         for (int x = 0; x < w; x++) {
-            int rgb = image.getRGB(x, y); 
-            Color pixelColor = new Color(rgb); 
+      int[] pixels = new int[N];
+      image.getRGB(x, y, w, h, pixels, 0, w);
 
-            varR += Math.pow(pixelColor.getRed() - meanR, 2.0);
-            varG += Math.pow(pixelColor.getGreen() - meanG, 2.0);
-            varB += Math.pow(pixelColor.getBlue() - meanB, 2.0);
-         }
+      int meanR = node.color.getRed(), meanG = node.color.getGreen(), meanB = node.color.getBlue();
+      for (int i = 0; i < N; i++) {
+         Color pixelColor = new Color(pixels[i]); 
+
+         varR += Math.pow(pixelColor.getRed() - meanR, 2.0);
+         varG += Math.pow(pixelColor.getGreen() - meanG, 2.0);
+         varB += Math.pow(pixelColor.getBlue() - meanB, 2.0);
       }
 
-      varR /= N - 1.0;
-      varG /= N - 1.0;
-      varB /= N - 1.0;
+      varR /= (double) N - 1.0;
+      varG /= (double) N - 1.0;
+      varB /= (double) N - 1.0;
 
-      double C2 = Math.pow(0.03 * 255, 2);
+      double C2 = Math.pow(0.03 * 255.0, 2);
       double siR = 1 / (varR / C2 + 1), siG = 1 / (varG / C2 + 1), siB = 1 / (varB / C2 + 1);
 
       return 0.299 * siR + 0.587 * siG + 0.144 * siB; 

@@ -43,6 +43,7 @@ public class App {
       Scanner scanner = new Scanner(System.in);
 
       File imageFile = null;
+      File gifFile = null;
 
       int ERR_MODE = 0;
       double ERR_THRESHOLD = -1;
@@ -203,17 +204,22 @@ public class App {
 
          // Compression Process
          System.out.println("\n========================================================================================================================================");
-         System.out.println("\nGambar sedang dikompresi...");
-         
          long start = System.nanoTime(); 
 
          BufferedImage image = ImageIO.read(imageFile);
-         ERR_THRESHOLD = (COMP_TARGET == 0) ? ERR_THRESHOLD : ThresholdCalculator.getThreshold(imageFile, COMP_TARGET, ERR_THRESHOLD, MIN_SIZE, ERR_MODE);
-         Quadtree tree = new Quadtree(image, ERR_THRESHOLD, MIN_SIZE, ERR_MODE);
-
-         File compressedFile = tree.renderImage(imagePath, getInfo(imageFile, "name"), getInfo(imageFile, "extension"));
-         File gifFile = null;
          
+         // Find threshold value for target compression rate
+         if (COMP_TARGET != 0) {
+            System.out.print("\nMencari ambang batas...");
+            ERR_THRESHOLD = ThresholdCalculator.getThreshold(imageFile, COMP_TARGET, ERR_THRESHOLD, MIN_SIZE, ERR_MODE);
+         }
+
+         // Create quadtree for compression of image
+         System.out.println("\nGambar sedang dikompresi...");
+         Quadtree tree = new Quadtree(image, ERR_THRESHOLD, MIN_SIZE, ERR_MODE);
+         File compressedFile = tree.renderImage(imagePath, getInfo(imageFile, "name"), getInfo(imageFile, "extension"));
+         
+         // Create compression process gif 
          if (gifPath != null) {
             System.out.println("GIF sedang dibuat...");
             gifFile = tree.renderGif(gifPath, getInfo(imageFile, "name"));
@@ -240,12 +246,12 @@ public class App {
          if (gifFile != null) System.out.println("GIF proses kompresi dapat ditemukan di \"" + gifFile.getAbsolutePath() + "\". ");
 
          // Reset settings
-         imageFile = null;
-
+         imageFile = gifFile = null;
          ERR_MODE = MIN_SIZE = 0;
          ERR_THRESHOLD = COMP_TARGET = -1;
-
          imagePath = gifPath = null;
+         image.flush();
+         System.gc();
 
          System.out.println("\n========================================================================================================================================");
 
