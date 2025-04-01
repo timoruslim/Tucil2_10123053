@@ -23,8 +23,7 @@ public class QuadtreeNode {
       this.image = image;
       this.mode = mode;
       this.color = average();
-      ErrorCalculator calc = new ErrorCalculator(image, color); 
-      this.error = calc.calculateError(mode);
+      this.error = ErrorCalculator.calculateError(mode, image, color);
       this.cImage = compress();
       this.depth = depth;
    }

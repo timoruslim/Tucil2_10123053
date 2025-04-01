@@ -1,34 +1,27 @@
 import java.util.HashMap;
-import java.util.function.Supplier;
+import java.util.function.BiFunction;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class ErrorCalculator {
 
-   // Fields
-   public final HashMap<Integer, Supplier<Double>> errorModes;
-   public BufferedImage image;
-   public Color color;
-
-   // Constructor 
-   public ErrorCalculator(BufferedImage image, Color color) {
-      errorModes = new HashMap<>();
-      errorModes.put(1, this::variance);
-      errorModes.put(2, this::mad);
-      errorModes.put(3, this::mpd);
-      errorModes.put(4, this::entropy);
-
-      this.image = image;
-      this.color = color;
+   // Hashmap for error calculation mode
+   public static final HashMap<Integer, BiFunction<BufferedImage, Color, Double>> errorModes = new HashMap<>();
+   static {
+      errorModes.put(1, ErrorCalculator::variance);
+      errorModes.put(2, ErrorCalculator::mad);
+      errorModes.put(3, ErrorCalculator::mpd);
+      errorModes.put(4, ErrorCalculator::entropy);
+      errorModes.put(5, ErrorCalculator::ssim);
    }
 
    // Calculate the error based on the mode
-   public double calculateError(int mode) {
-      return errorModes.getOrDefault(mode, () -> -1.0).get();
+   public static double calculateError(int mode, BufferedImage image, Color color) {
+      return errorModes.get(mode).apply(image, color);
    }
 
    // Get color Variance of image
-   public double variance() {
+   public static double variance(BufferedImage image, Color color) {
       double varR = 0, varG = 0, varB = 0;
       int w = image.getWidth();
       int h = image.getHeight();
@@ -54,7 +47,7 @@ public class ErrorCalculator {
    }
 
    // Get color Mean Absolute Deviation (MAD) of image
-   public double mad() {
+   public static double mad(BufferedImage image, Color color) {
       double madR = 0, madG = 0, madB = 0;
       int w = image.getWidth();
       int h = image.getHeight();
@@ -80,7 +73,7 @@ public class ErrorCalculator {
    }
 
    // Get color Max Pixel Difference (MPD) of image
-   public double mpd() {
+   public static double mpd(BufferedImage image, Color color) {
       int maxR = 0, maxG = 0, maxB = 0;
       int minR = 256, minG = 256, minB = 256;
       int w = image.getWidth();
@@ -89,15 +82,15 @@ public class ErrorCalculator {
       for (int y = 0; y < h; y++) {
          for (int x = 0; x < w; x++) {
             int rgb = image.getRGB(x, y); 
-            Color color = new Color(rgb); 
+            Color pixelColor = new Color(rgb); 
 
-            maxR = (color.getRed() > maxR) ? color.getRed() : maxR;
-            maxG = (color.getGreen() > maxG) ? color.getGreen() : maxG;
-            maxB = (color.getBlue() > maxB) ? color.getBlue() : maxB;
+            maxR = (pixelColor.getRed() > maxR) ? pixelColor.getRed() : maxR;
+            maxG = (pixelColor.getGreen() > maxG) ? pixelColor.getGreen() : maxG;
+            maxB = (pixelColor.getBlue() > maxB) ? pixelColor.getBlue() : maxB;
 
-            minR = (color.getRed() < minR) ? color.getRed() : minR;
-            minG = (color.getGreen() < minG) ? color.getGreen() : minG;
-            minB = (color.getBlue() < minB) ? color.getBlue() : minB;
+            minR = (pixelColor.getRed() < minR) ? pixelColor.getRed() : minR;
+            minG = (pixelColor.getGreen() < minG) ? pixelColor.getGreen() : minG;
+            minB = (pixelColor.getBlue() < minB) ? pixelColor.getBlue() : minB;
          }
       }
 
@@ -106,7 +99,7 @@ public class ErrorCalculator {
    }
 
    // Get color Entropy of image
-   public double entropy() {
+   public static double entropy(BufferedImage image, Color color) {
       double[] histR = new double[256], histG = new double[256], histB = new double[256];
       int width = image.getWidth();
       int height = image.getHeight();
@@ -115,11 +108,11 @@ public class ErrorCalculator {
       for (int y = 0; y < height; y++) {
          for (int x = 0; x < width; x++) {
                int rgb = image.getRGB(x, y);
-               Color color = new Color(rgb);
+               Color pixelColor = new Color(rgb);
 
-               histR[color.getRed()]++;
-               histG[color.getGreen()]++;
-               histB[color.getBlue()]++;
+               histR[pixelColor.getRed()]++;
+               histG[pixelColor.getGreen()]++;
+               histB[pixelColor.getBlue()]++;
          }
       }
 
@@ -138,7 +131,7 @@ public class ErrorCalculator {
    }
    
    // Get color SSIM of image
-   public double ssim() {
+   public static double ssim(BufferedImage image, Color color) {
       double varR = 0, varG = 0, varB = 0;
       int w = image.getWidth();
       int h = image.getHeight();

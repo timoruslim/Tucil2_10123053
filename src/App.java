@@ -25,6 +25,7 @@ public class App {
    
    public static void main(String[] args) throws IOException {
 
+      // Title
       System.out.println(
          "\n========================================================================================================================================\n" +
          " ________                    .___ __                          _________                                                                 \n" +
@@ -46,27 +47,29 @@ public class App {
       int ERR_MODE = 0;
       double ERR_THRESHOLD = -1;
       int MIN_SIZE = 0;
+      double COMP_TARGET = -1;
 
       String imagePath = null;
       String gifPath = null;
 
+      // Main program
       while (isRunning) {
 
          // Input for image file path 
          while (imageFile == null) {
 
-               System.out.print("\nApa gambar yang ingin dikompresi? [ketik alamat] \u2192 ");
-               String path = scanner.nextLine( );
-               File option1 = new File(path); // absolute path
-               File option2 = new File("../test/" + path); // for ease of testing
+            System.out.print("\nApa gambar yang ingin dikompresi? [ketik alamat] \u2192 ");
+            String path = scanner.nextLine( );
+            File option1 = new File(path); // absolute path 
+            File option2 = new File("../test/" + path); // for ease of testing 
 
-               if (option1.exists()) {
-                  imageFile = option1;
-               } else if (option2.exists()) {
-                  imageFile = option2;
-               } else {
-                  System.out.println("File tidak ditemukan. Coba lagi. ");
-               }
+            if (option1.exists()) {
+               imageFile = option1;
+            } else if (option2.exists()) {
+               imageFile = option2;
+            } else {
+               System.out.println("File tidak ditemukan. Coba lagi. ");
+            }
 
          } 
          
@@ -79,12 +82,13 @@ public class App {
                2. Mean Absolute Deviation (MAD)
                3. Max Pixel Difference
                4. Entropy
+               5. Structural Similarity Index Measure (SSIM)
             """);
-            System.out.print("Pilih metode perhitungan galat! [Ketik 1,2,3,4] \u2192 ");
+            System.out.print("Pilih metode perhitungan galat! [Ketik 1,2,...,5] \u2192 ");
 
             if (scanner.hasNextInt()) { // check integer
                int mode = scanner.nextInt();
-               if (mode >= 1 && mode <= 4) { // check valid mode
+               if (mode >= 1 && mode <= 5) { // check valid mode
                   ERR_MODE = mode;
                } else {
                   System.out.println("Angka tidak valid. Coba lagi.");
@@ -140,6 +144,27 @@ public class App {
 
          }
 
+         // Input for target compression percentage 
+         while (COMP_TARGET == -1) {
+
+            System.out.print("\nMasukkan target persentase kompresi! [Ketik 0-1, dengan 0 untuk menonaktifkan] \u2192 ");
+
+            if (scanner.hasNextDouble()) { // check int
+               double target = scanner.nextDouble();
+               if (target >= 0 && target <= 1) { // check valid size
+                  COMP_TARGET = target;
+               } else {
+                  System.out.println("Angka tidak valid. Coba lagi."); 
+               }
+            } else {
+               scanner.next();
+               System.out.println("Angka tidak valid. Coba lagi.");
+            }
+
+            scanner.nextLine();
+
+         }
+
          // Input for compressed image file path 
          while (imagePath == null) {   
 
@@ -183,6 +208,7 @@ public class App {
          long start = System.nanoTime(); 
 
          BufferedImage image = ImageIO.read(imageFile);
+         ERR_THRESHOLD = (COMP_TARGET == 0) ? ERR_THRESHOLD : ThresholdCalculator.getThreshold(imageFile, COMP_TARGET, ERR_THRESHOLD, MIN_SIZE, ERR_MODE);
          Quadtree tree = new Quadtree(image, ERR_THRESHOLD, MIN_SIZE, ERR_MODE);
 
          File compressedFile = tree.renderImage(imagePath, getInfo(imageFile, "name"), getInfo(imageFile, "extension"));
@@ -216,12 +242,10 @@ public class App {
          // Reset settings
          imageFile = null;
 
-         ERR_MODE = 0;
-         ERR_THRESHOLD = -1;
-         MIN_SIZE = 0;
+         ERR_MODE = MIN_SIZE = 0;
+         ERR_THRESHOLD = COMP_TARGET = -1;
 
-         imagePath = null;
-         gifPath = null;
+         imagePath = gifPath = null;
 
          System.out.println("\n========================================================================================================================================");
 

@@ -15,14 +15,14 @@ public class Quadtree {
    public int nodeCount = 0;
 
    // Compression Constants
-   public int MODE;
+   public int ERR_MODE;
    public double ERR_THRESHOLD;
    public int MIN_SIZE;
 
    // Constructor
-   public Quadtree(BufferedImage image, double ERR_THRESHOLD, int MIN_SIZE, int MODE) {
-      this.root = new QuadtreeNode(image, 0, MODE);
-      this.MODE = MODE;
+   public Quadtree(BufferedImage image, double ERR_THRESHOLD, int MIN_SIZE, int ERR_MODE) {
+      this.root = new QuadtreeNode(image, 0, ERR_MODE);
+      this.ERR_MODE = ERR_MODE;
       this.ERR_THRESHOLD = ERR_THRESHOLD;
       this.MIN_SIZE = MIN_SIZE;
 
@@ -35,14 +35,16 @@ public class Quadtree {
       
       // Make into leaf node if sufficient
       int size = node.image.getWidth() * node.image.getHeight();
-      if (node.error <= this.ERR_THRESHOLD || size <= this.MIN_SIZE || size/4 < this.MIN_SIZE) {
-         if (node.depth > this.treeDepth) this.treeDepth = node.depth; 
+      if (node.error <= ERR_THRESHOLD || size <= MIN_SIZE || size/4 < MIN_SIZE) {
+         if (node.depth > treeDepth) treeDepth = node.depth; 
+         // System.out.println("Leaf: " + node.error);
          node.leaf = true; 
          return; 
       }
 
       // Recursion 
       node.divide();
+      // System.out.println("Branch: " + node.error);
       for (QuadtreeNode child : node.children) {
          buildTree(child);
       }
