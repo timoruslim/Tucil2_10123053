@@ -75,9 +75,9 @@ public class QuadtreeNode {
       int mh = h / 2;
 
       QuadtreeNode tl = new QuadtreeNode(image, new int[]{x, y, mw, mh}, depth + 1, mode); 
-      QuadtreeNode tr = new QuadtreeNode(image, new int[]{x+mw, y, w-mw, mh}, depth + 1, mode); 
-      QuadtreeNode bl = new QuadtreeNode(image, new int[]{x, y+mh, mw, h-mh}, depth + 1, mode); 
-      QuadtreeNode br = new QuadtreeNode(image, new int[]{x+mw, y+mh, w-mw, h-mh}, depth + 1, mode); 
+      QuadtreeNode tr = new QuadtreeNode(image, new int[]{x + mw, y, w - mw, mh}, depth + 1, mode); 
+      QuadtreeNode bl = new QuadtreeNode(image, new int[]{x, y + mh, mw, h - mh}, depth + 1, mode); 
+      QuadtreeNode br = new QuadtreeNode(image, new int[]{x + mw, y + mh, w - mw, h - mh}, depth + 1, mode); 
       this.children = new ArrayList<>(Arrays.asList(tl, tr, bl, br)); 
 
    }

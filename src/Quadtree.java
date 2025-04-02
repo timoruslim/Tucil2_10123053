@@ -37,7 +37,7 @@ public class Quadtree {
       
       // Make into leaf node if sufficient
       int size = node.patch[2] * node.patch[3];
-      if (node.error <= ERR_THRESHOLD || size <= MIN_SIZE || size/4 < MIN_SIZE) {
+      if (node.error <= ERR_THRESHOLD || size <= MIN_SIZE || size/4.0 < MIN_SIZE) {
          if (node.depth > treeDepth) treeDepth = node.depth; 
          // System.out.println("Leaf: " + node.error);
          node.leaf = true; 
