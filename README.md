@@ -97,10 +97,12 @@ Lalu, program akan menghasilkan keluaran berikut.
 7. Gambar hasil kompresi pada alamat yang ditentukan.
 8. (Opsional) GIF proses kompresi pada alamat yang ditentukan.
 
-Berikut contoh kompresi yang dilakukan program.
-Original | Compressed | GIF
-:-------------------------:|:-------------------------:|:-------------------------:
-![boat.jpeg](https://github.com/timoruslim/Tucil2_10123053/blob/main/test/boat.jpeg) | ![boat_compressed.jpeg](https://github.com/timoruslim/Tucil2_10123053/blob/main/test/boat_compressed.jpeg) | ![boat_compressed.gif](https://github.com/timoruslim/Tucil2_10123053/blob/main/test/boat_compressed.gif)
+Berikut contoh kompresi yang dilakukan program. 
+<p align="center">
+   <img src="https://github.com/timoruslim/Tucil2_10123053/blob/main/test/boat.jpeg" width="49%">
+   <img src="https://github.com/timoruslim/Tucil2_10123053/blob/main/test/boat_compressed.gif" width="49%"> 
+</p>
+
 
 ## Author
 
