@@ -106,11 +106,12 @@ public class App {
          // Input for threshold 
          while (ERR_THRESHOLD == -1) {
 
-            System.out.print("\nMasukkan ambang batas! [Ketik angka ≥0] \u2192 ");
+            int maxThreshold = ThresholdCalculator.errorMax.get(ERR_MODE).intValue();
+            System.out.print("\nMasukkan ambang batas! [Ketik 0-" + maxThreshold + "] \u2192 ");
 
             if (scanner.hasNextDouble()) { // check double
                double threshold = scanner.nextDouble();
-               if (threshold >= 0) { // check valid threshold
+               if (threshold >= 0 && threshold <= maxThreshold) { // check valid threshold
                   ERR_THRESHOLD = threshold;
                } else {
                   System.out.println("Angka tidak valid. Coba lagi.");
@@ -186,7 +187,7 @@ public class App {
          // Input for gif file path 
          while (gifPath == null) {
 
-            System.out.print("\nMau simpan GIF di mana? [Ketik alamat, atau 0 jika tidak ingin] \u2192 ");
+            System.out.print("\nMau simpan GIF di mana? [Ketik alamat, dengan 0 untuk menonaktifkan] \u2192 ");
             String path = scanner.nextLine();
             File option = new File(path); // absolute path
 
@@ -241,7 +242,7 @@ public class App {
          System.out.println("Persentasi kompresi      : " + df.format(compressionPercent) + "% ");
          System.out.println("Kedalaman pohon          : " + tree.treeDepth + " ");
          System.out.println("Banyak simpul pada pohon : " + tree.nodeCount + " ");
-
+         
          System.out.println("\nGambar hasil kompresi dapat ditemukan di \"" + compressedFile.getAbsolutePath() + "\". ");
          if (gifFile != null) System.out.println("GIF proses kompresi dapat ditemukan di \"" + gifFile.getAbsolutePath() + "\". ");
 

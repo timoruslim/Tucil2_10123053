@@ -1,6 +1,10 @@
 # Tugas Kecil 2 | Strategi Algoritma (IF2211)
 
-Ini adalah Tugas Kecil 2 mata kuliah Strategi Algoritma (IF2211) yang berupa program kompresi gambar menggunakan metode quadtree. Quadtree adalah struktur data pohon setiap simpulnya memiliki maksimal empat anak. Di sini, quadtree merepresentasikan pembagian suatu gambar menjadi blok-blok yang lebih kecil, sehingga dapat digunakan untuk mengkompresi gambar. Digunakan metode berbasis _divide and conquer_ untuk melakukan kompresi dengan quadtree.
+Ini adalah Tugas Kecil 2 mata kuliah Strategi Algoritma (IF2211) yang berupa program kompresi gambar menggunakan metode quadtree. Quadtree adalah struktur data pohon yang setiap simpulnya memiliki maksimal empat anak. Di sini, quadtree merepresentasikan pembagian suatu gambar menjadi blok-blok yang lebih kecil, sehingga dapat digunakan untuk mengkompresi gambar. Digunakan metode berbasis _divide and conquer_ untuk melakukan kompresi dengan quadtree.
+
+## _Divide and Conquer_
+
+Suatu gambar dapat dikompresi dengan membaginya menjadi empat blok. Lalu, setiap blok akan dibagikan terus-menerus secara rekursif. Jika suatu blok sudah dapat dihampirkan dengan warna rataannya dengan cukup baik (galat di bawah suatu ambang batas), atau blok tersebut sudah cukup kecil, pembagian akan dihentikan. Proses ini dapat dipermudahkan menggunakan data struktur quadtree, dengan setiap simpul merepresentasikan suatu blok dari gambar, lalu simpul daun menyatakan blok yang sudah dihampirkan dengan warna rataannya. Untuk informasi selengkapnya, dapat dilihat di laporan.
 
 ## Program Requirements
 
@@ -14,33 +18,35 @@ Berikut langkah-langkah untuk menjalankan program.
 
 1. Clone repository ini.
 
-```bash
-git clone https://github.com/timoruslim/Tucil2_10123053
-```
+   ```sh
+   git clone https://github.com/timoruslim/Tucil2_10123053
+   ```
 
-3. Navigate to `src` directory.
+2. Navigate to `src` directory.
 
-```bash
-cd Tucil2_10123053/src
-```
+   ```sh
+   cd Tucil2_10123053/src
+   ```
 
-4. Compile `App.java`.
+3. Compile `App.java`.
 
-```bash
-javac App.java
-```
+   ```sh
+   javac App.java
+   ```
 
-3. Execute App.
+4. Execute App.
 
-```bash
-java App
-```
+   ```sh
+   java App
+   ```
 
 Folder juga dapat dibuka dengan IDE sebagai project, lalu file `App.java` dapat di-run secara langsung.
 
 ## Struktur Program
 
-```bash
+Berikut struktur dari program ini.
+
+```
 ├── bin/
 │   ├── App.class
 │   ├── ErrorCalculator.class
@@ -68,6 +74,34 @@ Folder juga dapat dibuka dengan IDE sebagai project, lalu file `App.java` dapat 
 └── README.md
 ```
 
-## Authors
+## How It Works
 
-1. [Timothy Niels Ruslim (10123053)](https://github.com/timoruslim)
+Program kompresi gambar ini berupa CLI. Setelah menjalankan program, berikut masukan yang diperlukan.
+
+1. Alamat dari gambar yang ingin dikompresi.
+2. Metode perhitungan galat.
+3. Ambang batas nilai galat untuk pembagian.
+4. Ukuran minimum blok.
+5. (Opsional) Target persentase kompresi.
+6. Alamat dari gambar hasil kompresi.
+7. (Opsional) Alamat dari GIF proses kompresi.
+
+Lalu, program akan menghasilkan keluaran berikut.
+
+1. Waktu eksekusi kompresi (dalam ms).
+2. Ukuran gambar sebelum kompresi (dalam MB).
+3. Ukuran gambar sesudah kompresi (dalam MB).
+4. Persentase kompresi yang tercapai.
+5. Kedalaman pohon quadtree.
+6. Banyak simpul pada pohon quadtree.
+7. Gambar hasil kompresi pada alamat yang ditentukan.
+8. (Opsional) GIF proses kompresi pada alamat yang ditentukan.
+
+Berikut contoh kompresi yang dilakukan program.
+Original | Compressed | GIF
+:-------------------------:|:-------------------------:|:-------------------------:
+![boat.jpeg](https://github.com/timoruslim/Tucil2_10123053/blob/main/test/boat.jpeg) | ![boat_compressed.jpeg](https://github.com/timoruslim/Tucil2_10123053/blob/main/test/boat_compressed.jpeg) | ![boat_compressed.gif](https://github.com/timoruslim/Tucil2_10123053/blob/main/test/boat_compressed.gif)
+
+## Author
+
+[Timothy Niels Ruslim](https://github.com/timoruslim) (10123053)
