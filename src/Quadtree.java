@@ -37,7 +37,8 @@ public class Quadtree {
       
       // Make into leaf node if sufficient
       int size = node.patch[2] * node.patch[3];
-      if (node.error <= ERR_THRESHOLD || size <= MIN_SIZE || size/4.0 < MIN_SIZE) {
+      boolean withinThreshold = ERR_MODE == 5 ? node.error >= ERR_THRESHOLD : node.error <= ERR_THRESHOLD;
+      if (withinThreshold || size <= MIN_SIZE || size/4.0 < MIN_SIZE) {
          if (node.depth > treeDepth) treeDepth = node.depth; 
          // System.out.println("Leaf: " + node.error);
          node.leaf = true; 
@@ -74,7 +75,7 @@ public class Quadtree {
       BufferedImage bl = createImageRecursion(node.children.get(2), depth); 
       BufferedImage br = createImageRecursion(node.children.get(3), depth); 
 
-      g.drawImage(tl, 0, 0, null); 
+      g.drawImage(tl, 0, 0, null);  
       g.drawImage(tr, w/2, 0, null); 
       g.drawImage(bl, 0, h/2, null); 
       g.drawImage(br, w/2, h/2, null); 

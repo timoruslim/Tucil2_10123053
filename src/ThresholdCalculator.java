@@ -57,13 +57,21 @@ public class ThresholdCalculator {
             deleteAll(tempDir);
             return threshold; // found correct threshold
 
-         } else if (compressionPercent > COMP_TARGET) {
+         } else if (compressionPercent > COMP_TARGET) { // too much compression
 
-            high = threshold; // too much compression, decrease threshold
+            if (ERR_MODE == 5) {
+               low = threshold;
+            } else {
+               high = threshold;
+            }
 
-         } else {
+         } else { // too little compression
 
-            low = threshold; // too little compression, increase threshold
+            if (ERR_MODE == 5) {
+               high = threshold;
+            } else {
+               low = threshold;
+            }
 
          }
 
