@@ -100,7 +100,12 @@ public class Quadtree {
       
       File file = new File(path + "\\" + fileName + "_compressed.gif");
       ImageOutputStream output = new FileImageOutputStream(file);
-      GifSequenceWriter writer = new GifSequenceWriter(output, BufferedImage.TYPE_INT_RGB, 500, true);
+      GifSequenceWriter writer = new GifSequenceWriter(
+         output, 
+         BufferedImage.TYPE_INT_RGB, 
+         500, 
+         true
+      );
 
       for (int i = 0; i <= treeDepth; i++) {
          BufferedImage image = createImage(i);

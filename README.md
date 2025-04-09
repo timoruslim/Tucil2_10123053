@@ -12,6 +12,12 @@ Program menggunakan bahasa Java, sehingga diperlukan hal berikut.
 
 1. JDK (Java Development Kit)
 
+## Dependencies
+
+Program juga menggunakan dependency berikut.
+
+1. `gif-sequence-writer.jar` ([library](https://gist.github.com/jesuino/528703e7b1974d857b36) untuk animasi GIF oleh Elliot Kroo)
+
 ## Build and Run Program
 
 Berikut langkah-langkah untuk menjalankan program.
@@ -22,22 +28,22 @@ Berikut langkah-langkah untuk menjalankan program.
    git clone https://github.com/timoruslim/Tucil2_10123053
    ```
 
-2. Navigate to `src` directory.
+2. Navigate to `Tucil2_10123053` directory.
 
    ```sh
-   cd Tucil2_10123053/src
+   cd Tucil2_10123053
    ```
 
-3. Compile `App.java`.
+3. Compile java files to `bin`.
 
    ```sh
-   javac App.java
+   javac -d bin -cp "lib/gif-sequence-writer.jar" src/*.java
    ```
 
-4. Execute App.
+4. Execute `App` with dependencies.
 
    ```sh
-   java App
+   java -cp "bin;lib/gif-sequence-writer.jar" App
    ```
 
 Folder juga dapat dibuka dengan IDE sebagai project, lalu file `App.java` dapat di-run secara langsung.
@@ -56,6 +62,8 @@ Berikut struktur dari program ini.
 │   └── ThresholdCalculator.class
 ├── doc/
 │   └── Tucil2_K1_10123053_Timothy Niels Ruslim.pdf
+├── lib/
+│   └── gif-sequence-writer.jar
 ├── src/
 │   ├── App.java
 │   ├── ErrorCalculator.java
@@ -97,12 +105,12 @@ Lalu, program akan menghasilkan keluaran berikut.
 7. Gambar hasil kompresi pada alamat yang ditentukan.
 8. (Opsional) GIF proses kompresi pada alamat yang ditentukan.
 
-Berikut contoh kompresi yang dilakukan program. 
+Berikut contoh kompresi yang dilakukan program.
+
 <p align="center">
    <img src="https://github.com/timoruslim/Tucil2_10123053/blob/main/test/boat.jpeg" width="49%">
    <img src="https://github.com/timoruslim/Tucil2_10123053/blob/main/test/boat_compressed.gif" width="49%"> 
 </p>
-
 
 ## Author
 
