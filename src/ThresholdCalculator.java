@@ -6,7 +6,7 @@ import javax.imageio.ImageIO;
 
 public class ThresholdCalculator {
    
-   // Hashmap for threshold range depending on mdoe
+   // Hashmap for threshold range depending on mode
    public static final HashMap<Integer, Double> errorMax = new HashMap<>();
    static {
       errorMax.put(1, 65025.0);

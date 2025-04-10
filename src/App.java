@@ -62,11 +62,11 @@ public class App {
             System.out.print("\nApa gambar yang ingin dikompresi? [ketik alamat] \u2192 ");
             String path = scanner.nextLine( );
             File option1 = new File(path); // absolute path 
-            File option2 = new File("../test/" + path); // for ease of testing 
+            File option2 = new File("test/" + path); // for ease of testing 
 
-            if (option1.exists()) {
+            if (option1.exists() && option1.isFile()) {
                imageFile = option1;
-            } else if (option2.exists()) {
+            } else if (option2.exists() && option2.isFile()) {
                imageFile = option2;
             } else {
                System.out.println("File tidak ditemukan. Coba lagi. ");
@@ -177,7 +177,7 @@ public class App {
             if (folder.exists() && folder.isDirectory()) {
                imagePath = path;
             } else if (path.equals("test")) {
-               imagePath = "../test";
+               imagePath = "test";
             } else {
                System.out.println("Alamat tidak ditemukan. Coba lagi. ");
             }
@@ -193,10 +193,10 @@ public class App {
 
             if (path.equals("0")) {
                break;
-            } else if (option.exists()) {
+            } else if (option.exists() && option.isDirectory()) {
                gifPath = path;
             } else if (path.equals("test")) {
-               gifPath = "../test";
+               gifPath = "test";
             } else {
                System.out.println("Alamat tidak ditemukan. Coba lagi. ");
             }

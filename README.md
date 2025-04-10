@@ -16,7 +16,7 @@ Program menggunakan bahasa Java, sehingga diperlukan hal berikut.
 
 Program juga menggunakan dependency berikut.
 
-1. `gif-sequence-writer.jar` ([library](https://gist.github.com/jesuino/528703e7b1974d857b36) untuk animasi GIF oleh Elliot Kroo)
+1. `gif-sequence-writer.jar` (library untuk animasi GIF oleh [Elliot Kroo](https://gist.github.com/jesuino/528703e7b1974d857b36))
 
 ## Build and Run Program
 
